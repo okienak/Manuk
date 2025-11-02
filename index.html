@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OKIENAK </title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ---------------------------------------------------- */
+/* 1. Definisi Variabel CSS (Tema) */
+/* ---------------------------------------------------- */
+:root {
+    --primary-color: #7A00FF; /* Default: Ungu */
+    --primary-light: #F0E6FF; 
+    --background-color: #F5F7FA;
+    --text-color: #333333;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --error-color: #FF4D4F;
+    --success-color: #28a745;
+    --premium-color: #FFC107;
+}
+
+/* Tema Biru (Premium) */
+.theme-blue {
+    --primary-color: #007bff;
+    --primary-light: #E6F0FF;
+}
+/* Tema Hijau (Premium) */
+.theme-green {
+    --primary-color: #28a745;
+    --primary-light: #E6FFE6;
+}
+
+/* ---------------------------------------------------- */
+/* 2. Reset dan Global Styling */
+/* ---------------------------------------------------- */
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    font-family: 'Poppins', sans-serif; 
+}
+html, body { 
+    min-height: 100%; 
+    background: var(--background-color); 
+    color: var(--text-color); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    padding: 20px 0;
+}
+.container { 
+    width: 95%; 
+    max-width: 600px; 
+    margin-bottom: 20px;
+    background: #fff; 
+    border-radius: 16px; 
+    padding: 2rem; 
+    box-shadow: 0 4px 20px var(--shadow-color); 
+}
+h1 { 
+    text-align: center; 
+    color: var(--primary-color); 
+    margin-bottom: 1.5rem; 
+    font-weight: 700;
+}
+.greeting {
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    color: #555;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.greeting span {
+    color: var(--primary-color);
+}
+.premium-badge {
+    background: var(--premium-color);
+    color: #333;
+    padding: 0.3rem 0.6rem;
+    border-radius: 5px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    margin-left: 10px;
+}
+.premium-btn {
+    background: var(--premium-color);
+    color: var(--text-color);
+}
+.premium-btn:hover {
+    background: #e0ac00;
+    color: #333;
+}
+input, textarea, button { 
+    width: 100%; 
+    border-radius: 8px; 
+    border: 1px solid #ddd;
+    outline: none; 
+    font-size: 1rem; 
+    padding: 0.8rem 1rem; 
+    margin-bottom: 1rem;
+    transition: all 0.2s ease;
+}
+input:focus, textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px var(--primary-light);
+}
+textarea { 
+    min-height: 100px; 
+    resize: vertical; 
+    background: #fff; 
+}
+button { 
+    background: var(--primary-color); 
+    color: #fff; 
+    cursor: pointer; 
+    font-weight: 600; 
+    border: none;
+}
+button:hover { 
+    background: var(--primary-color); 
+    filter: brightness(1.2); 
+    transform: translateY(-1px);
+}
+.btn-danger {
+    background: var(--error-color);
+}
+.btn-danger:hover {
+    background: #c93030;
+}
+.btn-success {
+    background: var(--success-color);
+}
+.btn-success:hover {
+    background: #1f8737;
+}
+.hidden { 
+    display: none !important; 
+}
+.tab { 
+    display: flex; 
+    margin-bottom: 1.5rem; 
+    border-radius: 8px;
+    background: var(--primary-light);
+    padding: 5px;
+}
+.active-tab { 
+    background: var(--primary-color) !important; 
+    color: #fff !important; 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-weight: 700;
+}
+.note-card { 
+    background: var(--primary-light); 
+    border-radius: 12px; 
+    padding: 1.2rem; 
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+/* Style Toast Notification BARU */
+#toast-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column-reverse; /* Toast terbaru di atas */
+}
+.toast {
+    background: #333;
+    color: #fff;
+    padding: 15px 25px;
+    border-radius: 8px;
+    margin-top: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+    transform: translateY(20px);
+    font-weight: 600;
+    min-width: 300px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+.toast.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+.toast.success {
+    background: var(--success-color);
+}
+.toast.error {
+    background: var(--error-color);
+}
+</style>
+</head>
+<body>
+
+<div class="container" id="auth-container">
+    <h1> OKIENAK</h1>
+    <div class="tab">
+        <button id="login-tab" class="active-tab">Masuk</button>
+        <button id="register-tab">Daftar</button>
+    </div>
+    <div id="login-form">
+        <input id="login-email" type="email" placeholder="Email">
+        <input id="login-password" type="password" placeholder="Password">
+        <button id="login-btn">Masuk</button>
+    </div>
+    <div id="register-form" class="hidden">
+        <input id="reg-email" type="email" placeholder="Email">
+        <input id="reg-password" type="password" placeholder="Password">
+        <button id="register-btn">Daftar Akun</button>
+    </div>
+</div>
+
+<div class="container hidden" id="note-container">
+    <h1>📝 Catatan Saya</h1>
+    <p class="greeting">Halo, 
+        <span id="user-name"></span>
+        <span id="premium-status"></span>
+    </p>
+
+    <div id="theme-section" class="theme-selector hidden">
+        <span>🎨 Pilih Tema Premium Anda:</span>
+        <div class="theme-options">
+            <div id="swatch-default" class="color-swatch" data-theme="default"></div>
+            <div id="swatch-blue" class="color-swatch" data-theme="theme-blue"></div>
+            <div id="swatch-green" class="color-swatch" data-theme="theme-green"></div>
+        </div>
+    </div>
+    
+    <textarea id="note-input" placeholder="Tulis catatan baru di sini..."></textarea>
+    <div id="char-count" style="text-align: right; margin-bottom: 10px; font-size: 0.85rem; color: #888;">0 / 500 karakter</div>
+    <button id="add-note-btn">Tambah Catatan Baru</button>
+    
+    <div id="premium-upgrade-section" style="margin-top: 1.5rem; text-align: center;">
+        <button id="upgrade-btn" class="premium-btn">Upgrade ke Premium (Catatan Tak Terbatas)</button>
+    </div>
+    
+    <input type="text" id="search-input" placeholder="🔎 Cari catatan Anda..." style="margin-top: 1.5rem;">
+
+    <div id="notes-list" style="margin-top: 1.5rem;"></div>
+    
+    <button id="logout-btn" class="btn-danger" style="margin-top: 1rem;">Keluar</button>
+</div>
+
+<footer>
+    © 2026 OKIENAK 
+    <br>
+    Kontak: <a href="mailto:cidmomo19@gmail.com">cidmomo19@gmail.com</a>
+</footer>
+
+<div id="toast-container"></div>
+
+<script>
+// Variabel DOM
+const htmlElement = document.documentElement;
+const authContainer = document.getElementById("auth-container");
+const noteContainer = document.getElementById("note-container");
+// ... (variabel DOM lainnya)
+const registerBtn = document.getElementById("register-btn");
+const loginBtn = document.getElementById("login-btn");
+const logoutBtn = document.getElementById("logout-btn");
+const noteInput = document.getElementById("note-input");
+const addNoteBtn = document.getElementById("add-note-btn");
+const upgradeBtn = document.getElementById("upgrade-btn");
+const notesList = document.getElementById("notes-list");
+const searchInput = document.getElementById("search-input"); 
+const toastContainer = document.getElementById("toast-container"); // BARU
+
+const MAX_CHARS_NON_PREMIUM = 500;
+
+// Helper Functions
+const getUsers = () => JSON.parse(localStorage.getItem("users") || "{}");
+const saveUsers = (users) => localStorage.setItem("users", JSON.stringify(users));
+const getLoggedInUserEmail = () => localStorage.getItem("loggedIn");
+const ensureAuthVisible = () => authContainer.classList.remove("hidden");
+
+// ==== TOAST NOTIFICATION FUNCTION (BARU) ====
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    
+    // Tampilkan di kontainer
+    toastContainer.appendChild(toast);
+    
+    // Terapkan kelas 'show' untuk animasi
+    setTimeout(() => {
+        toast.classList.add('show');
+    }, 10); // Sedikit delay untuk transisi
+
+    // Hapus setelah 4 detik
+    setTimeout(() => {
+        toast.classList.remove('show');
+        // Hapus elemen dari DOM setelah transisi selesai
+        toast.addEventListener('transitionend', () => {
+            toast.remove();
+        }, { once: true });
+    }, 4000); 
+}
+
+
+// ==== THEME MANAGEMENT (tetap sama) ====
+function applyTheme(themeClass) {
+    htmlElement.classList.remove('theme-blue', 'theme-green');
+
+    if (themeClass !== 'default') {
+        htmlElement.classList.add(themeClass);
+    }
+    
+    const email = getLoggedInUserEmail();
+    let users = getUsers();
+    if (users[email]) {
+        users[email].theme = themeClass;
+        saveUsers(users);
+    }
+
+    document.querySelectorAll('.color-swatch').forEach(swatch => {
+        swatch.classList.remove('active');
+        if (swatch.dataset.theme === themeClass) {
+            swatch.classList.add('active');
+        }
+    });
+}
+
+document.querySelectorAll('.color-swatch').forEach(swatch => {
+    swatch.addEventListener('click', (e) => {
+        const email = getLoggedInUserEmail();
+        let users = getUsers();
+        if (users[email]?.isPremium) {
+            applyTheme(e.target.dataset.theme);
+        } else {
+            showToast("Fitur kustomisasi tema hanya tersedia untuk pengguna Premium!", 'error');
+        }
+    });
+});
+
+// ==== REGISTER (Menggunakan showToast) ====
+registerBtn.addEventListener("click",()=>{
+    const email = regEmail.value.trim();
+    const pass = regPassword.value.trim();
+    
+    if(!email || !pass) return showToast("Isi email & password!", 'error');
+    if(pass.length < 6) return showToast("Password minimal 6 karakter!", 'error');
+    
+    let users = getUsers();
+    if(users[email]) return showToast("Email sudah terdaftar!", 'error');
+    
+    users[email] = {password:pass, notes:[], isPremium: false, theme: 'default'}; 
+    saveUsers(users);
+
+    showToast("Daftar berhasil! Anda mendapatkan versi Basic.", 'success');
+    regEmail.value=""; regPassword.value="";
+    document.getElementById("login-tab").click(); // Kembali ke tab login
+});
+
+// ==== LOGIN (Menggunakan showToast) ====
+loginBtn.addEventListener("click",()=>{
+    const email = loginEmail.value.trim();
+    const pass = loginPassword.value.trim();
+    let users = getUsers();
+    
+    if(users[email] && users[email].password===pass){
+        if(!users[email].theme) users[email].theme = 'default';
+        saveUsers(users);
+        
+        localStorage.setItem("loggedIn", email);
+        showNotesPage(email);
+        loginEmail.value=""; loginPassword.value="";
+        showToast(`Selamat datang kembali, ${email.split('@')[0]}!`, 'success');
+    } else {
+        showToast("Email atau password salah!", 'error');
+    }
+});
+
+// ==== LOGOUT (tetap sama) ====
+logoutBtn.addEventListener("click",()=>{
+    if (confirm("Anda yakin ingin keluar?")) { // Tetap gunakan confirm untuk aksi kritis
+        localStorage.removeItem("loggedIn");
+        htmlElement.classList.remove('theme-blue', 'theme-green');
+        location.reload();
+    }
+});
+
+// ==== FITUR PREMIUM (Menggunakan showToast) ====
+function togglePremium(isUpgrade = true){
+    const email = getLoggedInUserEmail();
+    if (!email) return;
+
+    let users = getUsers();
+    users[email].isPremium = isUpgrade;
+    
+    if (!isUpgrade) {
+        users[email].theme = 'default';
+        applyTheme('default'); 
+        showToast("Anda kembali ke Basic. Batas catatan kini 500 karakter.", 'error');
+    } else {
+        showToast("🎉 Anda sekarang PREMIUM! Catatan tak terbatas & tema terbuka.", 'success');
+    }
+    saveUsers(users);
+    
+    renderPremiumStatus();
+    renderCharCount();
+}
+
+upgradeBtn.addEventListener("click", () => {
+    const email = getLoggedInUserEmail();
+    let users = getUsers();
+    const isPremium = users[email]?.isPremium;
+    
+    if (confirm(`Apakah Anda yakin ingin ${isPremium ? 'menurunkan ke Basic' : 'Upgrade ke Premium'}? (Simulasi)`)) {
+        togglePremium(!isPremium);
+    }
+});
+
+// ==== ADD NOTE, DELETE NOTE, UPDATE NOTE (Menggunakan showToast) ====
+addNoteBtn.addEventListener("click",()=>{
+    const text = noteInput.value.trim();
+    if(!text) return showToast("Tulis catatan dulu!", 'error');
+    
+    const email = getLoggedInUserEmail();
+    let users = getUsers();
+    const isPremium = users[email]?.isPremium;
+
+    if (!isPremium && text.length > MAX_CHARS_NON_PREMIUM) {
+        return showToast(`Batas catatan Basic adalah ${MAX_CHARS_NON_PREMIUM} karakter.`, 'error');
+    }
+
+    users[email].notes.unshift(text);
+    saveUsers(users);
+    noteInput.value="";
+    renderCharCount(); 
+    renderNotes();
+    showToast("Catatan baru berhasil ditambahkan!", 'success');
+});
+
+function deleteNote(index){
+    if(!confirm("Anda yakin ingin menghapus catatan ini?")) return;
+    const email = getLoggedInUserEmail();
+    let users = getUsers();
+    users[email].notes.splice(index, 1); 
+    saveUsers(users);
+    renderNotes();
+    showToast("Catatan berhasil dihapus.", 'success');
+}
+
+function updateNote(index, newText){
+    const email = getLoggedInUserEmail();
+    let users = getUsers();
+    const isPremium = users[email]?.isPremium;
+    
+    if (!isPremium && newText.length > MAX_CHARS_NON_PREMIUM) {
+        return showToast(`Batas catatan Basic adalah ${MAX_CHARS_NON_PREMIUM} karakter.`, 'error');
+    }
+
+    users[email].notes[index] = newText;
+    saveUsers(users);
+    renderNotes(); 
+    showToast("Catatan berhasil diperbarui!", 'success');
+}
+
+// ... (Fungsi lain tetap sama) ...
+// ==== START EDIT MODE (Menggunakan showToast) ====
+function startEdit(index) {
+    const card = document.querySelector(`.note-card[data-index="${index}"]`);
+    const noteContent = card.querySelector('.note-content');
+    const noteText = getUsers()[getLoggedInUserEmail()].notes[index];
+
+    card.classList.add('editing');
+    
+    // Ganti paragraf dengan textarea
+    noteContent.innerHTML = `<textarea class="edit-textarea">${noteText}</textarea>`;
+    
+    // Ganti tombol aksi
+    card.querySelector('.note-actions').innerHTML = `
+        <button class="btn-success btn-save" data-index="${index}">Simpan</button>
+        <button class="btn-cancel" data-index="${index}">Batal</button>
+    `;
+    
+    const textarea = card.querySelector('.edit-textarea');
+    textarea.focus();
+    
+    // Tambahkan Event Listener untuk tombol Simpan dan Batal
+    card.querySelector('.btn-save').addEventListener('click', (e) => {
+        const newText = textarea.value.trim();
+        if (!newText) {
+            showToast("Catatan tidak boleh kosong!", 'error');
+            return;
+        }
+        updateNote(e.target.dataset.index, newText);
+    });
+
+    card.querySelector('.btn-cancel').addEventListener('click', () => {
+        renderNotes(); // Render ulang untuk membatalkan edit
+    });
+}
+
+
+searchInput.addEventListener('input', () => {
+    renderNotes(searchInput.value.toLowerCase());
+});
+
+function renderNotes(filterText = ''){
+    // ... (Logika renderNotes tetap sama, pastikan menggunakan showToast untuk pesan jika tidak ditemukan) ...
+    notesList.innerHTML="";
+    const email = getLoggedInUserEmail();
+    let users = getUsers();
+    if(!users[email]) return;
+    let notes = users[email].notes;
+    
+    // Filter Catatan
+    const filteredNotes = notes.map((note, index) => ({ note, index })).filter(item => {
+        return item.note.toLowerCase().includes(filterText);
+    });
+
+    if(filteredNotes.length === 0 && filterText) {
+        notesList.innerHTML = `<p style="text-align:center; color:#888;">Tidak ditemukan catatan yang cocok dengan kata kunci: <strong>${filterText}</strong></p>`;
+        // Tidak perlu showToast di sini, pesan sudah ada di list
+        return;
+    } else if (notes.length === 0) {
+        notesList.innerHTML = `<p style="text-align:center; color:#888;">Belum ada catatan. Tambahkan satu di atas!</p>`;
+        return;
+    }
+
+
+    filteredNotes.forEach((item, filteredIndex)=>{
+        const { note, index: originalIndex } = item;
+        
+        const div = document.createElement("div");
+        div.className="note-card";
+        div.setAttribute('data-index', originalIndex); 
+        
+        div.innerHTML=`
+            <strong>Catatan ${notes.length - originalIndex}</strong>
+            <p class="note-content">${linkify(note)}</p>
+            <div class="note-actions">
+                <button class="btn-edit" data-index="${originalIndex}">Edit</button>
+                <a href="?note=${email}-${originalIndex}" target="_blank">Bagikan</a>
+                <button class="btn-danger btn-delete" data-index="${originalIndex}">Hapus</button>
+            </div>
+        `;
+        notesList.appendChild(div);
+    });
+
+    notesList.querySelectorAll(".btn-delete").forEach(btn => {
+        btn.addEventListener("click", (e) => deleteNote(e.target.dataset.index));
+    });
+    
+    notesList.querySelectorAll(".btn-edit").forEach(btn => {
+        btn.addEventListener("click", (e) => startEdit(e.target.dataset.index));
+    });
+}
+// ... (Bagian showNotesPage, linkify, dan window.addEventListener("load") lainnya tetap sama) ...
+function linkify(text){
+    const urlPattern = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
+}
+function showNotesPage(email){
+    authContainer.classList.add("hidden");
+    noteContainer.classList.remove("hidden");
+    
+    let users = getUsers();
+    const userData = users[email];
+
+    userName.textContent = email.split('@')[0]; 
+    
+    applyTheme(userData.theme || 'default');
+    
+    renderPremiumStatus();
+    renderCharCount(); 
+    renderNotes();
+    // Penting: Reset kolom pencarian saat memuat halaman
+    searchInput.value = "";
+}
+
+window.addEventListener("load",()=>{
+    const logged = getLoggedInUserEmail();
+    const params = new URLSearchParams(window.location.search);
+    const noteParam = params.get("note");
+    
+    if(noteParam){
+        const [email,index] = noteParam.split("-");
+        let users = getUsers();
+        
+        if(users[email] && users[email].notes[index]){
+            document.querySelector('#auth-container').classList.add("hidden");
+            document.querySelector('#note-container').classList.remove("hidden");
+            document.querySelector('#user-name').textContent = "Pengunjung";
+
+            applyTheme('default'); 
+            
+            document.querySelector('#notes-list').innerHTML=`
+                <h2 style="color:var(--primary-color); margin-bottom:1rem; text-align:center;">Catatan yang Dibagikan</h2>
+                <div class="note-card">
+                    <p>${linkify(users[email].notes[index])}</p>
+                </div>
+                <div style="text-align:center; margin-top:20px; font-size:0.9rem; color:#555;">
+                    <p>Catatan ini dibagikan oleh pengguna ${email.split('@')[0]}.</p>
+                    <p>Kontak Pengembang: <a href="mailto:cidmomo19@gmail.com">cidmomo19@gmail.com</a></p>
+                </div>
+            `;
+            
+            document.querySelector('.greeting').style.display = "none";
+            document.querySelector('#note-input').style.display="none";
+            document.querySelector('#add-note-btn').style.display="none";
+            document.querySelector('#logout-btn').style.display="none";
+            document.querySelector('#upgrade-btn').closest('#premium-upgrade-section').style.display="none";
+            document.querySelector('#char-count').style.display="none"; 
+            document.querySelector('#theme-section').classList.add('hidden');
+            document.querySelector('#search-input').style.
